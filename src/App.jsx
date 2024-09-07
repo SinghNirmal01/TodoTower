@@ -1,5 +1,7 @@
 import React from 'react';
-import {useState} from 'react';
+import {useState , useEffect} from 'react';
+import { messaging } from './firebase';
+
 import Navbar from './components/Navbar.jsx';
 import Home from './components/app/Home.jsx';
 import Footer from './components/Footer.jsx';
@@ -10,6 +12,24 @@ import {FileProvider} from './contexts/ActiveFileContext.js';
 import {ProfileProvider} from './contexts/ProfileContext.js';
 //import './Debug.css'
 const App = () => {
+	const requestPermission = async () => {
+		try {
+			const permission = await Notification.requestPermission();
+			if (permission === 'granted') {
+				console.log('Notification permission granted.');
+				// Get FCM token here if needed
+			} else {
+				console.log('Notification permission denied.');
+			}
+		} catch (error) {
+			console.error('Error requesting notification permission', error);
+		}
+	};
+
+	useEffect(() => {
+		requestPermission();
+	}, []);
+
 	const [currentFile, setCurrentFile] = useState('Home');
 
 	const [totalTodos, setTotalTodos] = useState(() => {
