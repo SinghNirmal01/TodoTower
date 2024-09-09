@@ -14,8 +14,12 @@ import {ProfileProvider} from './contexts/ProfileContext.js';
 
 //import './Debug.css'
 const App = () => {
+	// Remove this block when done with debugging
 	useEffect(() => {
-		eruda.init();
+		if (process.env.NODE_ENV === 'development') {
+			
+			eruda.init();
+		}
 	}, []);
 
 	const requestPermission = async () => {
@@ -49,9 +53,7 @@ const App = () => {
 		return Number(localStorage.getItem('TotalTodos')) || 0;
 	});
 
-	const [activeTodos, setActiveTodos] = useState(() => {
-		return Number(localStorage.getItem('ActiveTodos')) || 0;
-	});
+	const [activeTodos, setActiveTodos] = useState(0);
 	const [completedTodos, setCompletedTodos] = useState(() => {
 		return Number(localStorage.getItem('CompletedTodos')) || 0;
 	});
