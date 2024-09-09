@@ -1,7 +1,8 @@
 import React from 'react';
-import {useState , useEffect} from 'react';
-import { messaging } from './firebase';
-
+import eruda from 'eruda';
+import {useState, useEffect} from 'react';
+import {messaging} from './firebase';
+import {getToken} from 'firebase/messaging';
 import Navbar from './components/Navbar.jsx';
 import Home from './components/app/Home.jsx';
 import Footer from './components/Footer.jsx';
@@ -10,14 +11,30 @@ import './style.css';
 import Setting from './components/settings/setting.jsx';
 import {FileProvider} from './contexts/ActiveFileContext.js';
 import {ProfileProvider} from './contexts/ProfileContext.js';
+
 //import './Debug.css'
 const App = () => {
+	useEffect(() => {
+		eruda.init();
+	}, []);
+
 	const requestPermission = async () => {
 		try {
 			const permission = await Notification.requestPermission();
 			if (permission === 'granted') {
-				console.log('Notification permission granted.');
-				// Get FCM token here if needed
+				const registration = await navigator.serviceWorker.ready;
+
+				const token = await getToken(messaging, {
+					vapidKey:
+						'BJ4c3rG3VicEhw0GoWl4Mk8Judd69FbiS3vUsl4lVJwJ5eEWtY-lhKGBRWTxUlCcTvg7j0YznV3OX5wnxSZmU0Q',
+					serviceWorkerRegistration: registration
+				}).catch(err => {
+					console.error('Error getting token', err);
+				});
+
+				if (token) {
+					console.log(token);
+				}
 			} else {
 				console.log('Notification permission denied.');
 			}
@@ -25,10 +42,6 @@ const App = () => {
 			console.error('Error requesting notification permission', error);
 		}
 	};
-
-	useEffect(() => {
-		requestPermission();
-	}, []);
 
 	const [currentFile, setCurrentFile] = useState('Home');
 
